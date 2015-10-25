@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'bidlist_crawler/crawler'
 
 describe BidlistCrawler::Crawler do
 
