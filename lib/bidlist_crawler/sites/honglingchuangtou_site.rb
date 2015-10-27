@@ -5,9 +5,14 @@ module BidlistCrawler
       SITE_URL = 'http://www.my089.com'
 
       def run(&block)
-        (1..total_page_count).each do |page_num|
-          data = get_data(generate_page_url(page_num))
-          yield(data)
+        begin
+          (1..total_page_count).each do |page_num|
+            logger.info "Getting #{page_num} page"
+            data = get_data(generate_page_url(page_num))
+            yield(data)
+          end
+        rescue Mechanize::ResponseCodeError => e
+          logger.info "[HonglingchuangtouResponseError] #{e.message}"
         end
       end
 
@@ -29,7 +34,7 @@ module BidlistCrawler
         bids.each do |tr|
           bid = {
             open_at: tr.search('.user_time span.lf').text.to_time,
-            bid_type: tr.search('.txt_tou .SubL90')[0]['title'].split('，')[0].strip,
+            bid_type: tr.search('.txt_tou b')[0]['title'].split('，')[0].strip,
             bid_id: tr.search('.txt_tou a.lf').first['href'].split('=')[1].strip,
             url_address: URI.join(page.uri, tr.search('.txt_tou a.lf').first['href']).to_s,
             name: tr.search('.txt_tou a.lf').text.strip,
@@ -53,12 +58,12 @@ module BidlistCrawler
           bid[:min_invest_amount] = strs[0].to_f
           bid[:max_invest_amount] = strs[1].to_f
           bid[:risk_level] = 1
-          bid[:remaining_amount] = page.search('.time span')[1].text[/\d+\.*\d+/].to_f
+          bid[:remaining_amount] = page.search('.time span')[1].text.gsub(/,/, '')[/\d+\.*\d+/].to_f
 #          unless str = page.search('.time span')[2].text.split('：')[1].strip == '已结束'
 #            bid[:closed_at] = str.to_datetime
 #          end
         rescue Mechanize::ResponseCodeError => e
-          logger.info "[PpdaiDetailResponseError] #{e.message}, #{data}"
+          logger.info "[HonglingchuangtouResponseError] #{e.message}, #{data}"
         end
       end
 
