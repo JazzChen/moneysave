@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151026024612) do
+ActiveRecord::Schema.define(version: 20151027031923) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,5 +35,9 @@ ActiveRecord::Schema.define(version: 20151026024612) do
     t.string   "bid_id"
     t.string   "bid_type"
   end
+
+  add_index "bidlists", ["bid_id"], name: "index_bidlists_on_bid_id", using: :btree
+  add_index "bidlists", ["bid_type"], name: "index_bidlists_on_bid_type", using: :btree
+  add_index "bidlists", ["site_id"], name: "index_bidlists_on_site_id", using: :btree
 
 end
