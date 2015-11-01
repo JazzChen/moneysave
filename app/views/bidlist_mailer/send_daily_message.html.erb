@@ -1,0 +1,4 @@
+<h1>bids</h1>
+<% @bidlist.each do |b| %>
+  <li><%= "#{b.name}: #{b.bid_amount}" %></li>
+<% end %>
